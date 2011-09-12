@@ -1,0 +1,95 @@
+\documentclass{article}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\begin{document}
+\centerline{\sc \large Collision Detection and Constraints}
+\centerline{Course Notes from Fundamentals of Computer Animation Comp559 with Paul Kry.}
+
+\section{Mathematical background}
+\subsection{The gradient, the Hessian and the Jacobian}
+The gradient $\nabla f$ of  a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $
+is the vector of its partial derivatives:
+\[
+    \nabla f =
+    \begin{pmatrix}
+        \frac{\partial f}{\partial x_1} \\ \\
+        \frac{\partial f}{\partial x_2} \\ \\
+        \vdots \\ \\
+        \frac{\partial f}{\partial x_n}
+    \end{pmatrix}
+\]
+Applied over the whole domain of $f$, It represents a vector field that points in the direction of the greatest rate of increase of the scalar field,
+and whose magnitude is the greatest rate of change.
+
+
+Similarly, the Hessian $\nabla ^2 f$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $
+is the square matrix of its second partial derivatives:
+\[
+    \nabla ^2 f =
+    \begin{bmatrix}
+        \frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1\,\partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_1\,\partial x_n} \\ \\
+        \frac{\partial^2 f}{\partial x_2\,\partial x_1} & \frac{\partial^2 f}{\partial x_2^2} &  & \frac{\partial^2 f}{\partial x_2\,\partial x_n} \\ \\
+        \vdots &   & \ddots & \vdots \\ \\
+        \frac{\partial^2 f}{\partial x_n\,\partial x_1} & \frac{\partial^2 f}{\partial x_n\,\partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_n^2}
+    \end{bmatrix}
+\]
+We can derive the Hessian by taking $\nabla(\nabla f)$ where the gradient of $f$ is expressed as a row vector:
+\[
+    \nabla(\nabla f) = \nabla (
+    \begin{bmatrix}
+        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2}
+    \end{bmatrix}) =
+    \begin{bmatrix}
+        \dfrac{\partial }{\partial x_1} \\ \\
+        \dfrac{\partial }{\partial x_2}
+    \end{bmatrix} \cdot
+    \begin{bmatrix}
+        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2}
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \dfrac{\partial f_1}{\partial x_1^2} & \dfrac{\partial f_1}{\partial x_1 \partial x_2} \\ \\
+        \dfrac{\partial f_1}{\partial x_2 \partial x_1} & \dfrac{\partial f_1}{\partial x_2^2}
+    \end{bmatrix}
+\]
+
+
+The Jacobian $J f$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R}^m $
+is a matrix of its partial derivatives:
+\[
+    Jf=
+    \begin{bmatrix}
+        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2} & \cdots & \dfrac{\partial f_1}{\partial x_n} \\ \\
+        \dfrac{\partial f_2}{\partial x_1} & \dfrac{\partial f_2}{\partial x_2} &   & \dfrac{\partial f_2}{\partial x_n} \\ \\
+        \vdots &  & \ddots & \vdots \\ \\
+        \dfrac{\partial f_m}{\partial x_1} & \dfrac{\partial f_m}{\partial x_2} & \cdots & \dfrac{\partial f_m}{\partial x_n}
+    \end{bmatrix}
+\]
+Note that each row of $J$ is the gradient of $f$ transposed: $J_{(i, :)} = \nabla f_i(x)^T$.
+\subsection{Taylor expansion}
+The taylor serie of an infinitely differentiable function $f$ at $x=a$ is given by:
+\[
+f(x) = \sum_{k=0}^{+\infty} \frac{f^{(k)}(a)}{k!}(x-a)^k
+\]
+A finite number of terms can be used as an approximation function of $f$ around $a$.
+For a k-differentiable function, Taylor's theorem states that:
+\begin{align*}
+    f(x) &= f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \cdots \\ &\qquad {} +\frac{f^{(k)}(a)}{k!}(x-a)^k + h_k(x)(x-a)^k \\
+    f(x) &= P_k(x) + h_k(x)(x-a)^k \\
+    f(x) &= P_k(x) + R_k(x)
+\end{align*} where $lim_{x\to a}h_k(x)=0$. \newline
+The remainder term $R_k(x) = h_k(x)(x-a)^k = o(|x-a|^k),  x \longrightarrow a$ represents the approximation error.
+
+Thus, say we have a function $x(t+h)$. We then can approximate it around $t$ using its Taylor expansion:
+\begin{align*}
+    x(t+h) &= x(t) + x'(t)((t+h)-t) + \frac{x''(h)}{2!}((t+h)-t)^2 + \cdots \\ &\qquad {} +\frac{x^{(k)}(h)}{k!}((t+h)-t)^k + h_k(t)((t+h)-t)^k \\
+    x(t+h) &= x(t) + h x'(t) + \frac{h^2}{2!}x''(h)+ \cdots + \frac{h^k}{k!}x^{(k)}(h) +  h^k h_k(t) 
+\end{align*}
+We will later use this expansion as a position update formula ($x$ will be the position and $h<1$ the timestep).
+
+\subsection{Taylor expansion for multivariate or vector functions} 
+Very often in our computations, we will use vector/matrix-form values --- position, velocity and acceleration are all vectors.
+Hence, we can try to derive an Taylor expansion approximation of second-order for a vector function.
+\begin{align}
+    y=f(\mathbf{x}+\Delta\mathbf{x})\approx f(\mathbf{x}) + J(\mathbf{x})\Delta \mathbf{x} +\frac{1}{2} \Delta\mathbf{x}^\mathrm{T} H(\mathbf{x}) \Delta\mathbf{x}
+\end{align}
+\end{document}
