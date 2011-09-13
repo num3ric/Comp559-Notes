@@ -2,7 +2,7 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \begin{document}
-\centerline{\sc \large Collision Detection and Constraints}
+\centerline{\sc \large Particle \& Collision Simulation}
 \centerline{Course Notes from Fundamentals of Computer Animation Comp559 with Paul Kry.}
 
 \section{Mathematical background}
@@ -92,4 +92,27 @@ Hence, we can try to derive an Taylor expansion approximation of second-order fo
 \begin{align}
     y=f(\mathbf{x}+\Delta\mathbf{x})\approx f(\mathbf{x}) + J(\mathbf{x})\Delta \mathbf{x} +\frac{1}{2} \Delta\mathbf{x}^\mathrm{T} H(\mathbf{x}) \Delta\mathbf{x}
 \end{align}
+\section{Particle simulation}
+In physically based animation, particles can be divided into two main groups:
+\begin{itemize}
+\item Non-interacting particles such as dust, sparks, snow, rain, \ldots 
+\item Interacting particles such as cloth, cables, elastic solids, dluids, \ldots 
+\end{itemize}
+\subsection{Introductory example}
+Say we have snow blown by a simple wind force function $f(x, t)$ which depends on both time and position:
+\[\dot{x} = f(x, t)\]
+In solving an ODE such as this one, we might have a boundary value problem where knowing the starting point $x_0$ and the ending point $x_n$, we look for $x(t)$. This is usually hard to compute and can have many possible solutions (i.e. cycles). We could also have an initial value problem: we know $x_0$ (and $\dot{x_0}$), and we want to compute $x(t)$. This method is generally faster.
+\begin{align*}
+    \mathbf{x} &= \begin{bmatrix} x \\ y \end{bmatrix}, \quad
+    \mathbf{\dot{x}} = \begin{bmatrix} \dot{x} \\ \dot{y} \end{bmatrix} = \begin{bmatrix} 1 \\ -3y \end{bmatrix}, \quad
+    \mathbf{x} \in \mathbb{R} \\
+    \dot{x} &= 1 \quad \Rightarrow \quad x(t) = c_1+t \\
+    \dot{y} &= -3y \quad \Rightarrow \quad y(t) = c_2 e^{-3 x} \\
+    \mathbf{x_0} &= \begin{bmatrix} 0 \\ 1 \end{bmatrix}, \quad \Rightarrow \quad 
+    x(t) = t, \quad y(t) = e^{-3 x}
+\end{align*}
+However, computing the exact formula for a particle path would generally be unrealistic. The only viable approach is to approximate the ODE solution by discretizing time. The particle path $x(t)$ will then describe a discrete sequence of displacements --- hopefully small enough so that they remain unnoticeable. Correct appearance and expected behavior are our primary concerns.
+\subsection{Forward Euler}
+Using the forward euler approximation method, we discretize time and find solution at each time steps $0<h<1$. For all the methods we will explore, the size of $h$ will be an important component to the stability of the approximation. Very often, time steps too large will cause the particle system to 'blow up'.
+
 \end{document}
