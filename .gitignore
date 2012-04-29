@@ -2,3 +2,5 @@
 *.log
 *.pdf
 *.nb
+untracked/
+.DS_Store

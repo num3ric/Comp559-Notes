@@ -1,112 +1,255 @@
 \documentclass{article}
-\usepackage{mathtools}
-\usepackage{amssymb}
-\usepackage{float}
+\usepackage{amsmath,amssymb,amsthm, graphicx, float, subfig}
 \begin{document}
+\renewcommand{\arraystretch}{1.9}
 \centerline{\sc \large Particle \& Collision Simulation}
 \centerline{Course Notes from Fundamentals of Computer Animation Comp559 with Paul Kry.}
 
 \section{Mathematical background}
-\subsection{The gradient, the Hessian and the Jacobian}
-The gradient $\nabla f$ of  a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $
-is the row (sometimes column?) vector of its partial derivatives:
+\subsection{Multivariate/Vector Calculus Basics} First of all, we consider a
+real-valued multivariate function $f$ defined as follows: $f:\mathbb{R}^n
+\longrightarrow \mathbb{R}$. This function, which we can call a scalar field,
+maps $n$ independent variables to one real-valued dependent variable. Now
+consider the vector-valued multivariate function $F:\mathbb{R}^n \longrightarrow
+\mathbb{R}^n$. This function which maps $n$ independent variables to a vector of
+$n$ dimensions represents a vector field. By the end of this section, you will
+understand this assertion: \textit{``The Hessian of a scalar field is the
+Jacobian of its gradient while the Laplacian of a scalar field is the divergence
+of its gradient.''}
+\subsection{Functions defined over scalar fields}
+\subsubsection{Gradient}
+What is the gradient of $f$? It is the derivative of a scalar field; essentially
+a derivative in higher dimensions. We first treat the nabla symbol $\nabla$ as
+if it was a vector differential operator: 
 \[
-    \nabla f =
-    \begin{pmatrix}
-        \dfrac{\partial f}{\partial x_1} &
-        \dfrac{\partial f}{\partial x_2} &
-        \hdots &
-        \dfrac{\partial f}{\partial x_n}
-    \end{pmatrix}
+\nabla = 
+\begin{bmatrix}
+    \dfrac{\partial }{\partial x_1} \\
+    \dfrac{\partial }{\partial x_2} \\
+    \vdots \\
+    \dfrac{\partial }{\partial x_n}
+\end{bmatrix}
 \]
-Applied over the whole domain of $f$, It represents a vector field that points in the direction of the greatest rate of increase of the scalar field,
-and whose magnitude is the greatest rate of change.
-
-
-Similarly, the Hessian $\nabla ^2 f$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $
-is the square matrix of its second partial derivatives:
+Therefore, the gradient of $\nabla f$ is a vector of its partial derivatives:
 \[
-    \nabla ^2 f =
+\nabla f = 
+\begin{bmatrix}
+    \dfrac{\partial f}{\partial x_1} \\
+    \dfrac{\partial f}{\partial x_2} \\
+    \vdots \\
+    \dfrac{\partial f}{\partial x_n}
+\end{bmatrix}
+\]
+Applied over the whole domain of $f$, it yields a vector field where the vectors
+point in the direction of the greatest rate of increase of the scalar field. As
+such we can view $\nabla : (\mathbb{R}^n \rightarrow \mathbb{R})
+\longrightarrow (\mathbb{R}^n \rightarrow \mathbb{R}^n) $ since it transforms a
+scalar field into a vector field.
+%TODO: FIELD NOTATION IS SKETCHY. C^k functions maybe? See wikipedia laplacian
+%article.
+\subsubsection{Hessian}
+
+The Hessian $\nabla \otimes \nabla f$\footnote{This is a non-standard notation.
+If $\nabla$ is used, the Hessian is usually denoted $\nabla^2 f$ but I find this
+very confusing since it would be indistinguishable from the Laplacian.} or
+$H(f)$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $ is the
+square matrix of its second partial derivatives. \[
+    \nabla \otimes \nabla f =
     \begin{bmatrix}
-        \frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1\,\partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_1\,\partial x_n} \\ \\
-        \frac{\partial^2 f}{\partial x_2\,\partial x_1} & \frac{\partial^2 f}{\partial x_2^2} &  & \frac{\partial^2 f}{\partial x_2\,\partial x_n} \\ \\
-        \vdots &   & \ddots & \vdots \\ \\
-        \frac{\partial^2 f}{\partial x_n\,\partial x_1} & \frac{\partial^2 f}{\partial x_n\,\partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_n^2}
+        \frac{\partial^2 f}{\partial x_1^2} &
+        \frac{\partial^2 f}{\partial x_1\,\partial x_2} &
+        \cdots & \frac{\partial^2 f}{\partial x_1\,\partial x_n} \\ 
+        \frac{\partial^2 f}{\partial x_2\,\partial x_1}
+        & \frac{\partial^2 f}{\partial x_2^2} &  &
+        \frac{\partial^2 f}{\partial x_2\,\partial x_n} \\ 
+        \vdots &   & \ddots & \vdots \\ 
+        \frac{\partial^2 f}{\partial x_n\,\partial x_1}
+        & \frac{\partial^2 f}{\partial x_n\,\partial x_2} &
+        \cdots & \frac{\partial^2 f}{\partial x_n^2}
     \end{bmatrix}
 \]
-We can derive the Hessian by taking $\nabla(\nabla f)$ where the gradient of $f$ is expressed as a row vector:
+While the gradient mapped a scalar field to a vector field, the Hessian maps a
+scalar field to a a ``matrix field'': $\nabla \otimes \nabla : (\mathbb{R}^n
+\rightarrow \mathbb{R}) \longrightarrow (\mathbb{R}^n \rightarrow
+\mathbb{R}^{n^2})$. Just like a second derivative, the matrix associated to a
+point in the scalar field describes the local curvature of the field at that
+point.
+
+We can derive the Hessian by taking the outer product of $\nabla$ and the
+gradient of $f$. Using only two dimensions, we have:
+
 \[
-    \nabla(\nabla f) = \nabla (
+\nabla \otimes \nabla f = \nabla (\nabla{f})^T = 
     \begin{bmatrix}
-        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2}
-    \end{bmatrix}) =
-    \begin{bmatrix}
-        \dfrac{\partial }{\partial x_1} \\ \\
+        \dfrac{\partial }{\partial x_1} \\ 
         \dfrac{\partial }{\partial x_2}
     \end{bmatrix} \cdot
     \begin{bmatrix}
-        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2}
+        \dfrac{\partial f_1}{\partial x_1} &
+        \dfrac{\partial f_1}{\partial x_2}
     \end{bmatrix} =
     \begin{bmatrix}
-        \dfrac{\partial^2 f_1}{\partial^2 x_1} & \dfrac{\partial^2 f_1}{\partial x_1 \partial x_2} \\ \\
-        \dfrac{\partial^2 f_1}{\partial x_2 \partial x_1} & \dfrac{\partial^2 f_1}{\partial^2 x_2^2}
+        \dfrac{\partial^2 f_1}{\partial^2 x_1} &
+        \dfrac{\partial^2 f_1}{\partial x_1 \partial x_2} \\ 
+        \dfrac{\partial^2 f_1}{\partial x_2 \partial x_1} &
+        \dfrac{\partial^2 f_1}{\partial^2 x_2^2}
     \end{bmatrix}
 \]
 
-
-The Jacobian $J f$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R}^m $
-is a matrix of its partial derivatives:
+\subsubsection{Laplacian}
+The Laplacian $\nabla \cdot \nabla f$ of a function $ f: \mathbb{R}^n
+\longrightarrow \mathbb{R}$ is the sum of all its ``unmixed'' second partial
+derivatives:
 \[
-    Jf=
-    \begin{bmatrix}
-        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2} & \cdots & \dfrac{\partial f_1}{\partial x_n} \\ \\
-        \dfrac{\partial f_2}{\partial x_1} & \dfrac{\partial f_2}{\partial x_2} &   & \dfrac{\partial f_2}{\partial x_n} \\ \\
-        \vdots &  & \ddots & \vdots \\ \\
-        \dfrac{\partial f_m}{\partial x_1} & \dfrac{\partial f_m}{\partial x_2} & \cdots & \dfrac{\partial f_m}{\partial x_n}
-    \end{bmatrix}
+\nabla \cdot \nabla f = \sum_{i=1}^n \frac {\partial^2 f}{\partial x^2_i}
 \]
-Note that each row of $J$ is the gradient of $f$: $J_{(i, :)} = \nabla f_i(x)$.
 
-\subsubsection{Relationship between the Hessian and the Jacobian}
-Example: ``The Jacobian of the force is the Hessian of the energy.''
-First, let us define an \underline{energy} function $V : \mathbb{R}^2 \rightarrow \mathbb{R}$ which yields a potential energy value for each point in the space (a scalar field). We also define a \underline{force} function $F : \mathbb{R}^2 \rightarrow \mathbb{R}^2$ which yields a force vector field.
+You can also view it as the trace of the Hessian matrix. As opposed to the
+Hessian, the Laplacian is the inner product/dot product of $\nabla$
+and the gradient of $f$.
+
+\[
+\nabla \cdot \nabla f = (\nabla)^T \nabla{f} = 
+    \begin{bmatrix}
+        \dfrac{\partial }{\partial x_1} & 
+        \dfrac{\partial }{\partial x_2}
+    \end{bmatrix} \cdot
+    \begin{bmatrix}
+        \dfrac{\partial f_1}{\partial x_1} \\
+        \dfrac{\partial f_1}{\partial x_2}
+    \end{bmatrix} =
+    \dfrac{\partial }{\partial x_1} \dfrac{\partial f_1}{\partial x_1} +
+    \dfrac{\partial f_1}{\partial x_2} \dfrac{\partial f_1}{\partial x_2} = 
+    \dfrac{\partial^2 f_1}{\partial^2 x_1} + \dfrac{\partial^2 f_1}{\partial^2 x_2^2}
+\]
+It is a different kind of second derivative of a scalar field. Most noticeably,
+it maps a scalar field to a scalar field. In general terms, it measures the rate at
+which the average value of $f$ over spheres centered at a point $p$, deviates
+from $f(p)$ as the radius of the sphere grows.
+
+\subsection{Functions defined over vector fields}
+
+\subsubsection{Jacobian}
+The Jacobian $J(F)$ of a function $ F: \mathbb{R}^n \longrightarrow \mathbb{R}^n $
+is a matrix of its partial derivatives. It is the generalization of the gradient
+for vector-valued function:
+\[
+    J(f)=
+    \begin{bmatrix}
+        \dfrac{\partial F_1}{\partial x_1} &
+        \dfrac{\partial F_1}{\partial x_2} &
+        \cdots &
+        \dfrac{\partial F_1}{\partial x_n} \\ 
+        \dfrac{\partial F_2}{\partial x_1} &
+        \dfrac{\partial F_2}{\partial x_2} &   &
+        \dfrac{\partial F_2}{\partial x_n} \\ 
+        \vdots &  & \ddots & \vdots \\ 
+        \dfrac{\partial F_n}{\partial x_1} &
+        \dfrac{\partial F_n}{\partial x_2} &
+        \cdots &
+        \dfrac{\partial F_n}{\partial x_n}
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        (\nabla F_1)^T \\ (\nabla F_2)^T  \\ \vdots \\ (\nabla F_n)^T 
+    \end{bmatrix} 
+\]
+Notice that each row of $J$ is the gradient of $F$: $J_{(i, :)} = (\nabla
+F_i(x))^T $. It maps a vector field to a ``matrix field''.
+\subsubsection{Divergence}
+The divergence $\nabla \cdot F$ of a function $ F: \mathbb{R}^n \longrightarrow
+\mathbb{R}^n $ is the sum of the partial derivatives of the vector.
+
+\begin{align*}
+\nabla \cdot F = (\nabla)^T  F &=
+\begin{bmatrix}
+        \dfrac{\partial }{\partial x_1} & 
+        \dfrac{\partial }{\partial x_2} &
+        \hdots
+        \dfrac{\partial }{\partial x_n}
+    \end{bmatrix} \cdot
+    \begin{bmatrix}
+        F_1 \\
+        F_2 \\
+        \vdots \\
+        F_n
+    \end{bmatrix} \\ &= 
+    \dfrac{\partial }{\partial x_1} F_1 +
+    \dfrac{\partial }{\partial x_2} F_2 +
+    \hdots +
+    \dfrac{\partial }{\partial x_n} F_n \\ &= 
+    \dfrac{\partial F_1}{\partial x_1} + 
+    \dfrac{\partial F_2}{\partial x_2} + 
+    \hdots +
+    \dfrac{\partial F_n}{\partial x_n}
+\end{align*}
+
+It maps a vector field to a scalar field. For a given point $p$ in a vector
+field, it measures the density of the outward flux of the vector field from an
+infinitesimal region around around $p$.
+\subsection{Relationships}
+As you may have guessed, if the Jacobian takes in as a vector field the gradient
+of a particular scalar field $f$, that Jacobian matrix is identical to the
+Hessian of $f$. They both reach the same ``matrix field''. The same principle
+applies to the divergence: if the divergence is applied to gradient of $f$, it
+will yield the same scalar field as the Laplacian of $f$.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/hessian.png}
+  \caption{Transition from a scalar field, to a vector field, to a ``matrix
+  field'' using first and second-order derivatives.}    
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{img/laplacian.png}
+  \caption{Transition from a scalar field, to a vector field, back to a scalar
+  field using first and second-order derivatives.}    
+\end{figure}
+
+\subsubsection{Example}
+`The Jacobian of the force is the Hessian of the energy.'' First, let us define
+an \underline{energy} function $V : \mathbb{R}^2 \rightarrow \mathbb{R}$ which
+yields a potential energy value for each point in the space (a scalar field). We
+also define a \underline{force} function $F : \mathbb{R}^2 \rightarrow
+\mathbb{R}^2$ which yields a force vector field.
 
 We can obtain the force field by computing the gradient of the energy field.
 \[
     F = \nabla V =
-    \begin{pmatrix}
-        \dfrac{\partial V}{\partial x_1} &
+    \begin{bmatrix}
+        \dfrac{\partial V}{\partial x_1} \\
         \dfrac{\partial V}{\partial x_2}
-    \end{pmatrix} = 
-    \begin{pmatrix} f_1 & f_2 \end{pmatrix}
+    \end{bmatrix} = 
+    \begin{bmatrix} F_1 \\ F_2 \end{bmatrix}
 \]
 Now the Hessian of the energy:
 \[
-    \nabla^2 V =
+    H(V) =
     \begin{bmatrix}
-        \dfrac{\partial^2 V}{\partial^2 x_1} & \dfrac{\partial^2 V}{\partial x_1 \partial x_2}  \\ \\
-        \dfrac{\partial^2 V}{\partial x_1 \partial x_2} & \dfrac{\partial^2 V}{\partial^2 x_2}
+        \dfrac{\partial^2 V}{\partial^2 x_1} &
+        \dfrac{\partial^2 V}{\partial x_1 \partial x_2}  \\
+        \dfrac{\partial^2 V}{\partial x_1 \partial x_2} &
+        \dfrac{\partial^2 V}{\partial^2 x_2}
     \end{bmatrix}
 \]
 The Jacobian of the force:
 \[
-    J F =
+    J(F) =
     \begin{bmatrix}
-        \dfrac{\partial f_1}{\partial x_1} & \dfrac{\partial f_1}{\partial x_2} \\ \\
-        \dfrac{\partial f_2}{\partial x_1} & \dfrac{\partial f_2}{\partial x_2}
+        \dfrac{\partial F_1}{\partial x_1} & \dfrac{\partial F_1}{\partial x_2} \\ 
+        \dfrac{\partial F_2}{\partial x_1} & \dfrac{\partial F_2}{\partial x_2}
     \end{bmatrix} = 
     \begin{bmatrix}
-        \dfrac{\partial}{\partial x_1} \cdot \dfrac{\partial V}{\partial x_1} &
-        \dfrac{\partial}{\partial x_2} \cdot \dfrac{\partial V}{\partial x_1} \\ \\
-        \dfrac{\partial}{\partial x_1} \cdot \dfrac{\partial V}{\partial x_2} &
-        \dfrac{\partial}{\partial x_2} \cdot \dfrac{\partial V}{\partial x_2}
+        \dfrac{\partial}{\partial x_1} \dfrac{\partial V}{\partial x_1} &
+        \dfrac{\partial}{\partial x_2} \dfrac{\partial V}{\partial x_1} \\ 
+        \dfrac{\partial}{\partial x_1} \dfrac{\partial V}{\partial x_2} &
+        \dfrac{\partial}{\partial x_2} \dfrac{\partial V}{\partial x_2}
     \end{bmatrix} = 
     \begin{bmatrix}
-        \dfrac{\partial^2 V}{\partial^2 x_1} & \dfrac{\partial^2 V}{\partial x_1 \partial x_2}  \\ \\
+        \dfrac{\partial^2 V}{\partial^2 x_1} & \dfrac{\partial^2 V}{\partial x_1 \partial x_2}  \\ 
         \dfrac{\partial^2 V}{\partial x_1 \partial x_2} & \dfrac{\partial^2 V}{\partial^2 x_2}
-    \end{bmatrix} = \nabla^2 V
+    \end{bmatrix} = H(V)
 \]
-Thus, if the vector-valued function taken by the Jacobian is the gradient of a scalar-valued function $S(\mathbf{x})$, then this specific Jacobian is equivalent to the Hessian of $S(\mathbf{x})$.
 \subsection{Taylor expansion}
 The taylor serie of an infinitely differentiable function $f$ at $x=a$ is given by:
 \[
@@ -178,22 +321,22 @@ Recall that a Lagrange Multiplier $\lambda$ is defined as follows:
 where $(x_0, y_0, z_0)$ is the maxima or the minima of a function $f$ subject to a constraint $g$. It is easier to gain intuition when the domain of $f$ is $\mathbb{R}^2$. Both $f : \mathbb{R}^2 \rightarrow \mathbb{R}$ and $g : \mathbb{R}^2 \rightarrow \mathbb{R}$ are standard scalar-valued functions mapping a plane position to a height value, generating a surface in 3d space. However, setting $g(x,y)=c$ effectively restricts the domain to a 2d contour line. Moving along the contour line $g=c$, the value of f can vary. However, an extremum of $f$ will be reached when no variation occurs (at a stationary point). This happens only when the contour line for $g=c$ meets contour lines of $f$ tangentially, or equivalently when the gradients at this point are parallel. This is equivalent to the Lagrange Multiplier equation where $\lambda$ simply is a scaling factor between two parallel gradient vectors.
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.7]{LagrangeMultipliers3D.png}
+    \includegraphics[scale=0.7]{img/LagrangeMultipliers3D.png}
     \caption{Find x and y to maximize f(x,y) subject to a constraint (shown in red) g(x,y) = c.}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.6]{LagrangeMultipliers2D.png}
+    \includegraphics[scale=0.6]{img/LagrangeMultipliers2D.png}
     \caption{Contour map. The red line shows the constraint g(x,y) = c. The blue lines are contours of f(x,y). The point where the red line tangentially touches a blue contour is our solution.}
 \end{figure}
 As an example, say we want to maximize the volume of a box without a cover, using 12 unit squared of material. We must then maximize $f(x,y,z) = xyz $ (the volume) under the constraint $g(x,y,z) = 2xz + 2yz + xy - 12 = 0$ (the surface). Under the Lagrange multiplier method, we look for values of x, y and z such that $\nabla f = \lambda \nabla g$ and $g(x,y,z) = 0$. Thus, we have the following system of equations:
 \begin{equation}
 \begin{pmatrix}
-    \dfrac{\partial f}{\partial x} \\ \\ \dfrac{\partial f}{\partial y} \\ \\ \dfrac{\partial f}{\partial z}
+    \dfrac{\partial f}{\partial x} \\ \dfrac{\partial f}{\partial y} \\ \dfrac{\partial f}{\partial z}
 \end{pmatrix} = 
 \lambda \cdot
 \begin{pmatrix}
-    \dfrac{\partial g}{\partial x} \\ \\ \dfrac{\partial g}{\partial y} \\ \\ \dfrac{\partial g}{\partial z}
+    \dfrac{\partial g}{\partial x} \\ \dfrac{\partial g}{\partial y} \\ \dfrac{\partial g}{\partial z}
 \end{pmatrix} \implies 
 \begin{pmatrix}
     yz \\ xz \\ xy
@@ -221,7 +364,8 @@ such that $g(\mathbf{x}) = 0$. Note that this equation has two unknowns: $\mathb
 
 The Principle of Virtual Work states that if we are going to add forces to the system in order to ensure $g(\mathbf{x})=0$ then we must not push in a direction in a direction in which it is admissible for the system to move, otherwise we do \underline{real work}! The 'virtual displacements' that we apply are inﬁnitesimal change in the position coordinates of a system such that the constraints remain satisfied. Note that this principle is really a form of the more general principle of least action.
 
-Back to our circular constraint example, how do we find this force $F_{constraint}$? First, in which direction will it be? Using the principle of virtual work, the force must be perpendicular to the circle. Knowing that the gradient vector fields radiates from the origin outwards, $F_{constraint} = - (\nabla g)^T \lambda$, where $\lambda$ is an unknown scaling coefficient (lagrange multiplier) we must find. 
+%FIXME: THERE IS PROBABLY AN ERROR IN THE FOLLOWING SECTION. Need to review.
+Back to our circular constraint example, how do we find this force $F_{constraint}$? First, in which direction will it be? Using the principle of virtual work, the force must be perpendicular to the circle. Knowing that the gradient vector fields radiates from the origin outwards, $F_{constraint} = - (\nabla g)^T \lambda $, where $\lambda$ is an unknown scaling coefficient (lagrange multiplier) we must find. 
 
 Next, consider $g(\mathbf{x}) = 0$. At the velocity level,
 \[
@@ -233,15 +377,15 @@ At the acceleration level,
 \]
 Using a different notation we can write,
 \begin{equation}
-G = \nabla g = \frac{\partial{g}}{\partial{\mathbf{x}}}
+J = \nabla g = \frac{\partial{g}}{\partial{\mathbf{x}}}
 \end{equation}
 \begin{equation}
-G \dot{\mathbf{x}} = 0
+J \dot{\mathbf{x}} = 0
 \end{equation}
 \begin{equation}
-\dot{G} \dot{\mathbf{x}} + G \ddot{\mathbf{x}} = 0
+\dot{J} \dot{\mathbf{x}} + J \ddot{\mathbf{x}} = 0
 \end{equation}
-where the partial derivative of $G$ are always on $\mathbf{x}$, while the derivatives of $\mathbf{x}$ are always on $t$.
+where the partial derivative of $J$ are always on $\mathbf{x}$, while the derivatives of $\mathbf{x}$ are always on $t$.
 \[    \frac{\partial g(\mathbf{x})}{\partial x_1} = \frac{\partial}{\partial x_1}((x_1^2+x_2^2)^{\frac{1}{2}} - 1)  = \frac{1}{2} \cdot (x_1^2 + x_2^2)^{-\frac{1}{2}} \cdot 2 x_1 = \frac{x_1}{\sqrt{x_1^2 + x_2^2}}
 \]
 \[
@@ -249,15 +393,15 @@ where the partial derivative of $G$ are always on $\mathbf{x}$, while the deriva
 \]
 Combining both in a single vector equation, we find:
 \begin{align*}
-    G &= \nabla g = \frac{\partial{g}}{\partial{\mathbf{x}}} = 
+    J &= \nabla g = \frac{\partial{g}}{\partial{\mathbf{x}}} = 
     \frac{1}{||\mathbf{x}||} \cdot
     \begin{pmatrix}
         x_1 & x_2
     \end{pmatrix} =
     \frac{\mathbf{x}^T}{||\mathbf{x}||}\\
-    \dot{G} &=
+    \dot{J} &=
     \begin{bmatrix}
-        \dfrac{x_2^2}{(x_1^2 + x_2^2)^{\frac{3}{2}}} & \dfrac{x_1 x_2}{(x_1^2 + x_2^2)^{\frac{3}{2}}} \\ \\
+        \dfrac{x_2^2}{(x_1^2 + x_2^2)^{\frac{3}{2}}} & \dfrac{x_1 x_2}{(x_1^2 + x_2^2)^{\frac{3}{2}}} \\ 
         \dfrac{-x_1 x_2}{(x_1^2 + x_2^2)^{\frac{3}{2}}} & \dfrac{x_1^2}{(x_1^2 + x_2^2)^{\frac{3}{2}}}
     \end{bmatrix} = 
     \frac{1}{||\mathbf{x}||^3} \cdot
@@ -269,39 +413,53 @@ Combining both in a single vector equation, we find:
 Using the acceleration constrain (12), we can solve the following system of equation:
 \begin{align*}
 \begin{bmatrix}
-        M & G^T \\ G & 0
+        M & J^T \\ J & 0
 \end{bmatrix} 
 \begin{bmatrix}
         \ddot{\mathbf{x}} \\ \lambda
 \end{bmatrix} &= 
 \begin{bmatrix}
-    F(\mathbf{x} ,\dot{\mathbf{x}}) \\ -\dot{G} \dot{\mathbf{x}} 
+    F(\mathbf{x} ,\dot{\mathbf{x}}) \\ -\dot{J} \dot{\mathbf{x}} 
 \end{bmatrix} \\
 \begin{bmatrix}
-    G M^{-1} M & G M^{-1} G^T \\ G & 0
+    J M^{-1} M & J M^{-1} J^T \\ J & 0
 \end{bmatrix} 
 \begin{bmatrix}
         \ddot{\mathbf{x}} \\ \lambda
 \end{bmatrix} &= 
 \begin{bmatrix}
-    G M^{-1} F(\mathbf{x} ,\dot{\mathbf{x}}) \\ -\dot{G} \dot{\mathbf{x}} 
+    J M^{-1} F(\mathbf{x} ,\dot{\mathbf{x}}) \\ -\dot{J} \dot{\mathbf{x}} 
 \end{bmatrix} \\
 \begin{bmatrix}
-    0 & G M^{-1} G^T \\ G & 0
+    0 & J M^{-1} J^T \\ J & 0
 \end{bmatrix} 
 \begin{bmatrix}
         \ddot{\mathbf{x}} \\ \lambda
 \end{bmatrix} &= 
 \begin{bmatrix}
-    G M^{-1} F(\mathbf{x} ,\dot{\mathbf{x}}) +\dot{G} \dot{\mathbf{x}} \\ -\dot{G} \dot{\mathbf{x}} 
+    J M^{-1} F(\mathbf{x} ,\dot{\mathbf{x}}) +\dot{J} \dot{\mathbf{x}} \\ -\dot{J} \dot{\mathbf{x}} 
 \end{bmatrix}
 \end{align*}
 
 From the first row, we obtain the equation
 \[
-G M^{-1} G^T \lambda = G M^{-1} F(\mathbf{x}, \dot{\mathbf{x}}) + \dot{G} \dot{\mathbf{x}}
+J M^{-1} J^T \lambda = J M^{-1} F(\mathbf{x}, \dot{\mathbf{x}}) + \dot{J} \dot{\mathbf{x}}
 \]
-Solving for $\lambda$ we obtain $F_{constraint} = G^T \lambda$ which can be used to compute the acceleration update which takes into account our constraint.
+Solving for $\lambda$ we obtain $F_{constraint} = J^T \lambda$ which can be used to compute the acceleration update which takes into account our constraint.
+
+Sidenote: we consider scalar values to be automatically multiplied by the identity vector/matrix in order to fill all the entries. In the last derivation, we would have for example:
+\[ M =
+\begin{bmatrix}
+        M & 0  \\ 0 & M
+\end{bmatrix}
+\]
+\[ \lambda =
+\begin{bmatrix}
+        \lambda  \\ \lambda
+\end{bmatrix}
+\]
+
 \subsubsection{Unilateral Constraints, or inequality constraints}
+
 
 \end{document}
