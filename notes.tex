@@ -172,11 +172,7 @@ The divergence $\nabla \cdot F$ of a function $ F: \mathbb{R}^n \longrightarrow
         F_2 \\
         \vdots \\
         F_n
-    \end{bmatrix} \\ &= 
-    \dfrac{\partial }{\partial x_1} F_1 +
-    \dfrac{\partial }{\partial x_2} F_2 +
-    \hdots +
-    \dfrac{\partial }{\partial x_n} F_n \\ &= 
+    \end{bmatrix} \\ &=  
     \dfrac{\partial F_1}{\partial x_1} + 
     \dfrac{\partial F_2}{\partial x_2} + 
     \hdots +
@@ -194,14 +190,14 @@ applies to the divergence: if the divergence is applied to gradient of $f$, it
 will yield the same scalar field as the Laplacian of $f$.
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.7\textwidth]{img/hessian.png}
+  \includegraphics[width=0.6\textwidth]{img/hessian.png}
   \caption{Transition from a scalar field, to a vector field, to a ``matrix
   field'' using first and second-order derivatives.}    
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.7\textwidth]{img/laplacian.png}
+  \includegraphics[width=0.6\textwidth]{img/laplacian.png}
   \caption{Transition from a scalar field, to a vector field, back to a scalar
   field using first and second-order derivatives.}    
 \end{figure}
@@ -316,9 +312,20 @@ Or using the taylor expansion:
 \subsection{Lagrange Multiplier}
 Recall that a Lagrange Multiplier $\lambda$ is defined as follows:
 \begin{equation}
-\nabla f(x_0, y_0, z_0) = \lambda \cdot \nabla g(x_0, y_0, z_0)
+    \nabla f(\mathbf{x_0}) = \lambda \cdot \nabla g(\mathbf{x_0})
 \end{equation}
-where $(x_0, y_0, z_0)$ is the maxima or the minima of a function $f$ subject to a constraint $g$. It is easier to gain intuition when the domain of $f$ is $\mathbb{R}^2$. Both $f : \mathbb{R}^2 \rightarrow \mathbb{R}$ and $g : \mathbb{R}^2 \rightarrow \mathbb{R}$ are standard scalar-valued functions mapping a plane position to a height value, generating a surface in 3d space. However, setting $g(x,y)=c$ effectively restricts the domain to a 2d contour line. Moving along the contour line $g=c$, the value of f can vary. However, an extremum of $f$ will be reached when no variation occurs (at a stationary point). This happens only when the contour line for $g=c$ meets contour lines of $f$ tangentially, or equivalently when the gradients at this point are parallel. This is equivalent to the Lagrange Multiplier equation where $\lambda$ simply is a scaling factor between two parallel gradient vectors.
+where $(\mathbf{x_0})$ is the maxima or the minima of a function $f$ subject to
+a constraint $g$. It is easier to gain intuition when the domain of $f$ is
+$\mathbb{R}^2$. Both $f : \mathbb{R}^2 \rightarrow \mathbb{R}$ and $g :
+\mathbb{R}^2 \rightarrow \mathbb{R}$ are standard scalar-valued functions
+mapping a plane position to a height value, generating a surface in 3d space.
+However, setting $g(x,y)=c$ effectively restricts the domain to a 2d contour
+line. Moving along the contour line $g=c$, the value of f can vary. However, an
+extremum of $f$ will be reached when no variation occurs (at a stationary
+point). This happens only when the contour line for $g=c$ meets contour lines of
+$f$ tangentially, or equivalently when the gradients at this point are parallel.
+This is equivalent to the Lagrange Multiplier equation where $\lambda$ simply is
+a scaling factor between two parallel gradient vectors.
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.7]{img/LagrangeMultipliers3D.png}
