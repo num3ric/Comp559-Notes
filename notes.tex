@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{amsmath,amssymb,amsthm, graphicx, float, subfig}
+\usepackage{amsmath,amssymb,amsthm, graphicx, float, subfig, hyperref}
 \begin{document}
 \renewcommand{\arraystretch}{1.9}
 \centerline{\sc \large Particle \& Collision Simulation}
@@ -9,24 +9,52 @@
 \subsection{Multivariate/Vector Calculus Basics} First of all, we consider a
 real-valued multivariate function $f$ defined as follows: $f:\mathbb{R}^n
 \longrightarrow \mathbb{R}$. This function, which we can call a scalar field,
-maps $n$ independent variables to one real-valued dependent variable. Now
-consider the vector-valued multivariate function $F:\mathbb{R}^n \longrightarrow
-\mathbb{R}^n$. This function which maps $n$ independent variables to a vector of
-$n$ dimensions represents a vector field. By the end of this section, you will
-understand this assertion: \textit{``The Hessian of a scalar field is the
+maps $n$ independent variables to one real-valued dependent variable. We say it is real-valued because elements in its range belong to $\mathbb{R}$, and multivariate (or ``of a vector variable'') because elements in its domain belong to $\mathbb{R}^n$. Here is one example:
+\[
+    f(\mathbf{x}) = f(x_1, x_2, \dots, x_n) = \sum_{i=1}^n x_i
+\]
+Now consider the vector-valued multivariate function $\mathbf{f}:\mathbb{R}^n \longrightarrow
+\mathbb{R}^m$. This function which maps $n$ independent variables to a vector of
+$m$ dimensions.
+
+\[
+\mathbf{f}(\mathbf{x}) = 
+\begin{bmatrix}
+    f_1(\mathbf{x}) \\
+    f_2(\mathbf{x}) \\
+    \vdots \\
+    f_m(\mathbf{x})
+\end{bmatrix}
+=
+\begin{bmatrix}
+    f_1(x_1, x_2, \dots, x_n) \\
+    f_2(x_1, x_2, \dots, x_n) \\
+    \vdots \\
+    f_m(x_1, x_2, \dots, x_n)
+\end{bmatrix}
+\]
+
+This type of function is typically called a vector field, most commonly when $n=m=3$. 
+
+
+By the end of this section, our hope is that you will
+understand this statement: \textit{``The Hessian of a scalar field is the
 Jacobian of its gradient while the Laplacian of a scalar field is the divergence
 of its gradient.''}
 \subsection{Functions defined over scalar fields}
+For simplicity, we will assume in the following sections that $m=n$.
+Furthermore, we will be using the \textit{numerator-layout notation}. 
+\footnote{\url{http://en.wikipedia.org/wiki/Matrix\_calculus\#Layout\_conventions}}
 \subsubsection{Gradient}
 What is the gradient of $f$? It is the derivative of a scalar field; essentially
 a derivative in higher dimensions. We first treat the nabla symbol $\nabla$ as
-if it was a vector differential operator: 
+if it was a row-vector differential operator: 
 \[
 \nabla = 
 \begin{bmatrix}
-    \dfrac{\partial }{\partial x_1} \\
-    \dfrac{\partial }{\partial x_2} \\
-    \vdots \\
+    \dfrac{\partial }{\partial x_1} &
+    \dfrac{\partial }{\partial x_2} &
+    \hdots &
     \dfrac{\partial }{\partial x_n}
 \end{bmatrix}
 \]
@@ -34,9 +62,9 @@ Therefore, the gradient of $\nabla f$ is a vector of its partial derivatives:
 \[
 \nabla f = 
 \begin{bmatrix}
-    \dfrac{\partial f}{\partial x_1} \\
-    \dfrac{\partial f}{\partial x_2} \\
-    \vdots \\
+    \dfrac{\partial f}{\partial x_1} &
+    \dfrac{\partial f}{\partial x_2} &
+    \hdots &
     \dfrac{\partial f}{\partial x_n}
 \end{bmatrix}
 \]
@@ -49,11 +77,11 @@ scalar field into a vector field.
 %article.
 \subsubsection{Hessian}
 
-The Hessian $\nabla \otimes \nabla f$\footnote{This is a non-standard notation.
-If $\nabla$ is used, the Hessian is usually denoted $\nabla^2 f$ but I find this
-very confusing since it would be indistinguishable from the Laplacian.} or
+The Hessian $\nabla \otimes \nabla f$ or
 $H(f)$ of a function $ f: \mathbb{R}^n \longrightarrow \mathbb{R} $ is the
-square matrix of its second partial derivatives. \[
+square matrix of its second partial derivatives.\footnote{$\nabla \otimes \nabla$ is a non-standard notation. The Hessian is usually denoted $\nabla^2 f$ but I find this
+very confusing since it would be indistinguishable from the Laplacian.}
+\[
     \nabla \otimes \nabla f =
     \begin{bmatrix}
         \frac{\partial^2 f}{\partial x_1^2} &
@@ -79,7 +107,7 @@ We can derive the Hessian by taking the outer product of $\nabla$ and the
 gradient of $f$. Using only two dimensions, we have:
 
 \[
-\nabla \otimes \nabla f = \nabla (\nabla{f})^T = 
+\nabla \otimes \nabla f = (\nabla)^T \nabla{f} = 
     \begin{bmatrix}
         \dfrac{\partial }{\partial x_1} \\ 
         \dfrac{\partial }{\partial x_2}
@@ -109,7 +137,7 @@ Hessian, the Laplacian is the inner product/dot product of $\nabla$
 and the gradient of $f$.
 
 \[
-\nabla \cdot \nabla f = (\nabla)^T \nabla{f} = 
+\nabla \cdot \nabla f = \nabla (\nabla{f})^T = 
     \begin{bmatrix}
         \dfrac{\partial }{\partial x_1} & 
         \dfrac{\partial }{\partial x_2}
@@ -130,37 +158,37 @@ from $f(p)$ as the radius of the sphere grows.
 \subsection{Functions defined over vector fields}
 
 \subsubsection{Jacobian}
-The Jacobian $J(F)$ of a function $ F: \mathbb{R}^n \longrightarrow \mathbb{R}^n $
+The Jacobian $J(\mathbf{f})$ of a function $ \mathbf{f}: \mathbb{R}^n \longrightarrow \mathbb{R}^n $
 is a matrix of its partial derivatives. It is the generalization of the gradient
-for vector-valued function:
+for vector-valued function.
 \[
-    J(f)=
+    J(\mathbf{f})=
     \begin{bmatrix}
-        \dfrac{\partial F_1}{\partial x_1} &
-        \dfrac{\partial F_1}{\partial x_2} &
+        \dfrac{\partial f_1}{\partial x_1} &
+        \dfrac{\partial f_1}{\partial x_2} &
         \cdots &
-        \dfrac{\partial F_1}{\partial x_n} \\ 
-        \dfrac{\partial F_2}{\partial x_1} &
-        \dfrac{\partial F_2}{\partial x_2} &   &
-        \dfrac{\partial F_2}{\partial x_n} \\ 
+        \dfrac{\partial f_1}{\partial x_n} \\ 
+        \dfrac{\partial f_2}{\partial x_1} &
+        \dfrac{\partial f_2}{\partial x_2} &   &
+        \dfrac{\partial f_2}{\partial x_n} \\ 
         \vdots &  & \ddots & \vdots \\ 
-        \dfrac{\partial F_n}{\partial x_1} &
-        \dfrac{\partial F_n}{\partial x_2} &
+        \dfrac{\partial f_n}{\partial x_1} &
+        \dfrac{\partial f_n}{\partial x_2} &
         \cdots &
-        \dfrac{\partial F_n}{\partial x_n}
+        \dfrac{\partial f_n}{\partial x_n}
     \end{bmatrix} = 
     \begin{bmatrix}
-        (\nabla F_1)^T \\ (\nabla F_2)^T  \\ \vdots \\ (\nabla F_n)^T 
+        \nabla f_1 \\ \nabla f_2 \\ \hdots \\ \nabla f_n
     \end{bmatrix} 
 \]
-Notice that each row of $J$ is the gradient of $F$: $J_{(i, :)} = (\nabla
-F_i(x))^T $. It maps a vector field to a ``matrix field''.
+Notice that each column of $J$ is the gradient of $\mathbf{f}$: $J_{(i, :)} = \nabla
+f_i(x)$. It maps a vector field to a ``matrix field''.
 \subsubsection{Divergence}
-The divergence $\nabla \cdot F$ of a function $ F: \mathbb{R}^n \longrightarrow
+The divergence $\nabla \cdot \mathbf{f}$ of a function $ \mathbf{f}: \mathbb{R}^n \longrightarrow
 \mathbb{R}^n $ is the sum of the partial derivatives of the vector.
 
 \begin{align*}
-\nabla \cdot F = (\nabla)^T  F &=
+\nabla \cdot \mathbf{f}  &=
 \begin{bmatrix}
         \dfrac{\partial }{\partial x_1} & 
         \dfrac{\partial }{\partial x_2} &
@@ -168,15 +196,15 @@ The divergence $\nabla \cdot F$ of a function $ F: \mathbb{R}^n \longrightarrow
         \dfrac{\partial }{\partial x_n}
     \end{bmatrix} \cdot
     \begin{bmatrix}
-        F_1 \\
-        F_2 \\
+        f_1 \\
+        f_2 \\
         \vdots \\
-        F_n
+        f_n
     \end{bmatrix} \\ &=  
-    \dfrac{\partial F_1}{\partial x_1} + 
-    \dfrac{\partial F_2}{\partial x_2} + 
+    \dfrac{\partial f_1}{\partial x_1} + 
+    \dfrac{\partial f_2}{\partial x_2} + 
     \hdots +
-    \dfrac{\partial F_n}{\partial x_n}
+    \dfrac{\partial f_n}{\partial x_n}
 \end{align*}
 
 It maps a vector field to a scalar field. For a given point $p$ in a vector
@@ -206,14 +234,14 @@ will yield the same scalar field as the Laplacian of $f$.
 `The Jacobian of the force is the Hessian of the energy.'' First, let us define
 an \underline{energy} function $V : \mathbb{R}^2 \rightarrow \mathbb{R}$ which
 yields a potential energy value for each point in the space (a scalar field). We
-also define a \underline{force} function $F : \mathbb{R}^2 \rightarrow
+also define a \underline{force} function $\mathbf{F} : \mathbb{R}^2 \rightarrow
 \mathbb{R}^2$ which yields a force vector field.
 
 We can obtain the force field by computing the gradient of the energy field.
 \[
-    F = \nabla V =
+    \mathbf{F} = (\nabla V)^T =
     \begin{bmatrix}
-        \dfrac{\partial V}{\partial x_1} \\
+        \dfrac{\partial V}{\partial x_1} \\ 
         \dfrac{\partial V}{\partial x_2}
     \end{bmatrix} = 
     \begin{bmatrix} F_1 \\ F_2 \end{bmatrix}
@@ -230,7 +258,7 @@ Now the Hessian of the energy:
 \]
 The Jacobian of the force:
 \[
-    J(F) =
+    J(\mathbf{F}) =
     \begin{bmatrix}
         \dfrac{\partial F_1}{\partial x_1} & \dfrac{\partial F_1}{\partial x_2} \\ 
         \dfrac{\partial F_2}{\partial x_1} & \dfrac{\partial F_2}{\partial x_2}
@@ -246,6 +274,133 @@ The Jacobian of the force:
         \dfrac{\partial^2 V}{\partial x_1 \partial x_2} & \dfrac{\partial^2 V}{\partial^2 x_2}
     \end{bmatrix} = H(V)
 \]
+\subsection{Chain rule}
+Recall the definition of the chain rule for functions of a single variable. Let $z=f(x)$ and $x=u(t)$ so that $z = (f \circ x)(t)$.
+\[
+\frac{dz}{dx} = f'(x) \cdot x'(t) = \frac{df}{dx} \cdot \frac{dx}{dt}
+\]
+Equivalently using a different notation, we have:
+\[
+    Dz = D(f \circ x)(t) = D(f(x))D(x(t))
+\]
+Now we consider the chain rule in the
+context of multivariate functions. For simplicity, we shall use only two
+dimensions.
+\subsubsection{Case 1}
+Let $z=f(x)$ and $x=u(\mathbf{t})=u(s, t)$ so that $z = (f \circ x)(s,t)$.
+
+\begin{align*}
+    \begin{bmatrix}
+        \dfrac{\partial z}{\partial s} &
+        \dfrac{\partial z}{\partial t} 
+    \end{bmatrix} &=
+    \begin{bmatrix}
+        \dfrac{df}{dx} \dfrac{\partial x}{\partial s} &
+        \dfrac{df}{dx} \dfrac{\partial x}{\partial t}
+    \end{bmatrix} \\
+    &= \dfrac{df}{dx} \nabla x \\
+\end{align*}
+So we have, $Dz = D(f \circ x)(\mathbf{t}) =
+D(f(x)) D(x(\mathbf{t}))$.
+
+\subsubsection{Case 2}
+Let $z= f(\mathbf{x}) =f(x_1, x_2)$ where $x_1=u(t)$ and $x_2=v(t)$.
+\begin{align*}
+    \dfrac{dz}{dt} &= \dfrac{\partial f}{\partial x_1} \dfrac{ d x_1}{dt} +
+                     \dfrac{\partial f}{\partial x_2} \dfrac{ d x_2}{dt} \\
+    &= \begin{bmatrix}
+           \dfrac{\partial f}{\partial x_1} & \dfrac{\partial
+           f}{\partial x_2}
+       \end{bmatrix} \cdot
+       \begin{bmatrix}
+           \dfrac{d x_1}{dt} \\ \dfrac{d x_2}{dt}
+       \end{bmatrix} \\
+    &= \nabla f \dfrac{d\mathbf{x}}{dt} \\
+\end{align*}
+So we have, $Dz = D(f \circ \mathbf{x})(t) =
+D(f(\mathbf{x}))D(\mathbf{x}(t))$.
+\subsubsection{Case 3}
+Let $z= f(\mathbf{x}) = f(x_1, x_2)$ where $x_1=u(\mathbf{t})=u(s, t)$ and
+$x_2= v(\mathbf{t}) = v(s, t)$.
+\begin{align*}
+\begin{bmatrix}
+    \dfrac{\partial z}{\partial s} &
+    \dfrac{\partial z}{\partial t}
+\end{bmatrix} &=
+\begin{bmatrix}
+    \dfrac{\partial f}{\partial x_1} \dfrac{\partial x_1}{\partial s} +
+    \dfrac{\partial f}{\partial x_2} \dfrac{\partial x_2}{\partial s} &
+    \dfrac{\partial f}{\partial x_1} \dfrac{\partial x_1}{\partial t} +
+    \dfrac{\partial f}{\partial x_2} \dfrac{\partial x_2}{\partial t}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+    \dfrac{\partial f}{\partial x_1} &
+    \dfrac{\partial f}{\partial x_2} 
+\end{bmatrix} \cdot
+\begin{bmatrix}
+    \dfrac{\partial x_1}{\partial s} & 
+    \dfrac{\partial x_1}{\partial t} \\
+    \dfrac{\partial x_2}{\partial s} & 
+    \dfrac{\partial x_2}{\partial t} \\
+\end{bmatrix} \\
+&= \nabla f \cdot J(\mathbf{x})
+\end{align*}
+
+So we have, $Dz = D(f \circ \mathbf{x})(\mathbf{t}) =
+D(f(\mathbf{x}))D(\mathbf{x}(\mathbf{t}))$.
+\subsubsection{Case 4}
+At last, let's consider the case of a vector-valued function $\mathbf{z} =
+\mathbf{f}(\mathbf{x}) = \mathbf{f}(x_1, x_2)$ where $x_1=u(\mathbf{t})=u(s, t)$ and
+$x_2= v(\mathbf{t}) = v(s, t)$.
+\[
+\mathbf{z} = 
+\begin{bmatrix}
+    f_1(\mathbf{x}) \\
+    f_2(\mathbf{x})
+\end{bmatrix}
+\]
+
+\begin{align*}
+\begin{bmatrix}
+    \dfrac{\partial f_1}{\partial s} &
+    \dfrac{\partial f_1}{\partial t} \\
+    \dfrac{\partial f_2}{\partial s} &
+    \dfrac{\partial f_2}{\partial t}
+\end{bmatrix}
+&=
+\begin{bmatrix}
+    \dfrac{\partial f_1}{\partial x_1} &
+    \dfrac{\partial f_1}{\partial x_2} \\
+    \dfrac{\partial f_2}{\partial x_1} &
+    \dfrac{\partial f_2}{\partial x_2}
+\end{bmatrix} \cdot
+\begin{bmatrix}
+    \dfrac{\partial x_1}{\partial s} & 
+    \dfrac{\partial x_1}{\partial t} \\
+    \dfrac{\partial x_2}{\partial s} & 
+    \dfrac{\partial x_2}{\partial t} \\
+\end{bmatrix} \\
+&= J(\mathbf{f}) \cdot J(\mathbf{x})
+\end{align*}
+
+So we have, $D\mathbf{z} = D(\mathbf{f} \circ \mathbf{x})(\mathbf{t}) =
+D(\mathbf{f}(\mathbf{x}))D(\mathbf{x}(\mathbf{t}))$.
+
+\subsubsection{Summary}
+Using the \textit{numerator-layout notation}, we found that the chain rule can
+be generalized to multivariate functions. The only difference between the cases
+is how the differential operator is applied.
+
+\begin{itemize}
+    \item The derivative of a scalar by a scalar $D(f(x))$ produces a scalar.
+    \item The derivative of a vector by a scalar $D(\mathbf{f}(x))$ produces a column vector.
+    \item The derivative of a scalar by a vector $D(f(\mathbf{x}))$ produces a row vector.
+    \item The derivative of a vector by a vector $D(\mathbf{f}(\mathbf{x}))$ produces a
+        jacobian matrix.
+\end{itemize}
+
+
 \subsection{Taylor expansion}
 The taylor serie of an infinitely differentiable function $f$ at $x=a$ is given by:
 \[
@@ -336,7 +491,7 @@ a scaling factor between two parallel gradient vectors.
     \includegraphics[scale=0.6]{img/LagrangeMultipliers2D.png}
     \caption{Contour map. The red line shows the constraint g(x,y) = c. The blue lines are contours of f(x,y). The point where the red line tangentially touches a blue contour is our solution.}
 \end{figure}
-As an example, say we want to maximize the volume of a box without a cover, using 12 unit squared of material. We must then maximize $f(x,y,z) = xyz $ (the volume) under the constraint $g(x,y,z) = 2xz + 2yz + xy - 12 = 0$ (the surface). Under the Lagrange multiplier method, we look for values of x, y and z such that $\nabla f = \lambda \nabla g$ and $g(x,y,z) = 0$. Thus, we have the following system of equations:
+As an example, say we want to maximize the volume of a box without a cover, using 12 unit squared of material. We must then maximize $f(x,y,z) = xyz $ (the volume) under the constraint $g(x,y,z) = 2xz + 2yz + xy - 12 = 0$ (the surface). Under the Lagrange multiplier method, we look for values of x, y and z such that $\nabla f = \lambda \nabla g$ and $g(x,y,z) = 0$. Thus, we have the following system of four equations with four unknowns:
 \begin{equation}
 \begin{pmatrix}
     \dfrac{\partial f}{\partial x} \\ \dfrac{\partial f}{\partial y} \\ \dfrac{\partial f}{\partial z}
